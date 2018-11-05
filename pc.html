@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        *{
+            margin: 0;
+            padding: 0  ;
+        }
+        html , body{
+            width: 100%;
+            height: 100%;
+        }
+        .box{
+            display: flex;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        ul{
+            margin: 0;
+            padding: 0;
+            height:100%;
+            width: 10%;
+            display: inline-block;
+            background: white;
+        }
+
+        li{
+            list-style: none;
+        }
+        .Choice {
+            margin-top: 20px;
+            height: 90%;
+            width: 100%;
+
+            padding: 20px 0;
+
+        }
+        .Choice img {
+            width: 3rem;
+            height: 3rem;
+            cursor: pointer;
+            z-index: 999;
+            display: inherit;
+            margin:15px  auto;
+        }
+
+        .left img{
+            width: 33%;
+            position: fixed;
+            z-index: 99;
+
+
+        }
+
+        .back{
+            background-image: url("img/back.jpg");
+            background-repeat: no-repeat;
+            background-size: 100%  100%;
+            width: 100%;
+            height: 100%;
+            float: right;
+            position: relative;
+        }
+        #yi {
+            position: fixed;
+        }
+        #yi img{
+            width: 100%;
+            height: 100%;
+
+        }
+        .on_fun{
+            display: flex;
+            padding: 0 10px;
+            position: fixed;
+            bottom: 50px;
+            height: 50px;
+
+        }
+        .on_fun   button{
+            margin-right: 5px;
+            bottom: 50px;
+            width: 50%;
+            height: 30px;
+        }
+        /*   txt   */
+        .txt{
+            margin: 0 20px;
+        }
+        .txt input{
+            width: 100%;
+        }
+        .yi_text span{
+            background: white;
+            position: fixed;
+        }
+
+        /**/
+
+        .confirm{
+            text-align: center;
+        }
+        .on_fun  {
+            position: fixed;
+            top: 0;
+            right: 90px;
+
+            z-index: 999;
+        }
+        .Yscroll{
+
+            overflow-y: scroll;
+            overflow-x: hidden;
+        }
+        .Yscroll::-webkit-scrollbar {
+            width: 10px;
+            height: 1px;
+        }
+        .Yscroll::-webkit-scrollbar-thumb {
+            border-radius: 10px;
+            -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+            background: #535353;
+        }
+        .Yscroll::-webkit-scrollbar-track {
+            -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+            border-radius: 10px;
+            background: #EDEDED;
+        }
+        /*伸缩图片样式*/
+        .drag_leaf {
+            position: fixed;
+            top: 100px;
+            left: 100px;
+            z-index: 999;
+        }
+
+        /*四边*/
+        .drag_leaf .t,
+        .drag_leaf .b,
+        .drag_leaf .l,
+        .drag_leaf .r {
+            position: absolute;
+            z-index: 1;
+
+
+        }
+
+        .drag_leaf .l,
+        .drag_leaf .r {
+            width: 5px;
+            height: 100%;
+            cursor: col-resize;
+        }
+
+        .drag_leaf .t,
+        .drag_leaf .b {
+            width: 100%;
+            height: 5px;
+            cursor: row-resize;
+        }
+
+        .drag_leaf .t {
+            top: 0;
+            height: 5px;
+        }
+
+        .drag_leaf .b {
+            bottom: 0;
+            height: 5px;
+        }
+
+        .drag_leaf .l {
+            left: 0;
+            height: 100%;
+        }
+
+        .drag_leaf .r {
+            right: 0;
+            height: 100%;
+        }
+
+        .drag_leaf:hover>span{
+            background: #666;
+        }
+        .drag_leaf:hover{
+            cursor: pointer;
+        }
+
+
+
+
+    </style>
+</head>
+<body>
+<div class="box">
+    <ul class="list_goods">
+        <li class="txt">
+            <input type="text" >
+            <div id="confirm" class="confirm">确认</div>
+        </li>
+        <li class="on_fun">
+            <button class="saves">保存</button>
+            <button class="revoke">撤回</button>
+        </li>
+        <li class="Choice Yscroll">
+            <img src="img/yu.gif"  >
+            <img src="img/sc.gif"  >
+            <img src="img/sg.gif"  >
+            <img src="img/rou.gif" alt="肉">
+            <img src="img/doujiao.gif" alt="">
+            <img src="img/kugua.gif" alt="">
+            <img src="img/mi.jpg" alt="">
+            <img src="img/pingguo.gif" alt="">
+
+        </li>
+
+    </ul>
+
+    <main class="back">
+
+
+        <div id="yi" ></div>
+        <div id="yi_text" class="yi_text"></div>
+
+    </main>
+</div>
+
+
+<script src="https://cdn.csdu.net/debug/page.2.0.0.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script>
+    page.ready(function () {
+        //  store.clear()  ;
+        var $body_W = $('body').width() *1 ;
+        var $body_H = $('body').height() *1 ;
+        var $list_goods = $('.list_goods').width() *1 ;
+
+        $(".Choice img ").draggable();    /* 图片可移动*/
+        $("#yi_text span").draggable();    /* 文字可移动*/
+        /* 拖动物品的滚动条 */
+        $(window).mousemove(function (e) {
+            if(e.pageX >= $list_goods){
+                $('.Choice').removeClass('Yscroll')
+            }
+            else {
+                $('.Choice').addClass('Yscroll')
+            }
+        }) ;
+        $('.Choice img').mouseup(function (e) {
+
+            if(e.pageX >= $list_goods){       /*拖动一定的范围以外*/
+                var $imgUrl = $(this).attr('src');
+                var $left =(  $(this).position().left / $body_W ) *100 ;
+                var $top = ($(this).position().top / $body_H ) *100;
+                var $style = `left:${$left}%;top:${$top}%;width:3rem;height:3rem`;
+                var tag_drag = '<div class="drag_leaf"  style=' + $style + ' ><span class="r"></span><span class="l"></span><span class="t"></span><span class="b"></span><img src=' + $imgUrl + ' ></div>' ;
+                $(tag_drag).clone().appendTo('#yi');
+            } ;
+
+            $(this).css({
+                "left": '0px',
+                "top": '0px'
+            }) ;
+            $(this).parent('li').addClass('Yscroll') ;
+            toudong() ;
+            $(" .drag_leaf ").draggable();
+
+        });
+        {
+            /* 获取本地存储的数据做渲染 */
+            var list = [] ;
+            var _json = store.get('json');
+            var listTXT = [] ;
+            var _jsonTXT = store.get('jsonTXT');
+
+            load_Leaf( _json  , list ,'img' , '#yi') ;
+            load_Leaf( _jsonTXT  , listTXT ,'span' , '#yi_text') ;
+
+        }
+        /*
+            data:  是获取本地数据
+            list:  是将本地存入列表中
+            tags:  是标签名 ：目前只有img和 span
+            Superior ：  是tags的父节点
+           */
+        function load_Leaf( data , list ,tags , Superior  ) {
+            try {
+                if( data.length ){
+                    list = data ;
+                    if( list.length > 0 ){
+
+                        list.map(function (indexs) {
+                            var left = ( indexs.left ) ;
+                            var top = ( indexs.top ) ;
+                            var widthDIV =  indexs.width+'px' ;
+                            var height =  indexs.height+'px' ;
+                            var CSS = `left:${left};top:${top};width:${widthDIV};height:${height}` ;
+
+
+                            if(tags == 'img'){
+                                var URL = indexs.imgURL ;
+                                var tag_drag_leaf = '<div class="drag_leaf"  style=' + CSS + '><span class="r"></span><span class="l"></span><span class="t"></span><span class="b"></span><img src=' + URL + ' ></div>' ;
+
+                                $(tag_drag_leaf).clone().appendTo(Superior);
+                            }
+
+
+                            else  if(tags == 'span'){
+                                var txt_VUL = indexs.TXT ;
+                                var span = `<span  style=" ${CSS}" >${txt_VUL}</span>` ;
+                                $(span).clone().appendTo(Superior);
+                            }
+                        })
+                    }
+
+                } ;
+                $(" .drag_leaf ").draggable();    /* 图片可移动*/
+                $("#yi_text span").draggable();
+                toudong()  ;
+
+            }
+            catch(err){}
+        } ;
+        $('.saves').on('click',function () {
+            store.clear()  ;
+
+            $('#yi img').each(function () {
+
+                let $DIVleft = (  $(this).parents('div').position().left / $body_W ) * 100  ;
+                let $DIVtop  = (  $(this).parents('div').position().top / $body_H  ) * 100;
+
+                let $DIV_W   = (  $(this).parents('div').width()) ;
+                let $DIV_H   = (  $(this).parents('div').height()) ;
+
+                var $imgUrl = $(this).attr('src') ;
+                MG =
+                    {
+                        left   :  $DIVleft*1+'%' ,
+                        top    :  $DIVtop*1 +'%',
+                        width  :  $DIV_W*1,
+                        height  :  $DIV_H*1,
+                        imgURL :  $imgUrl
+                    };
+                list.push(MG) ;
+                store.set('json',list);
+
+            });
+            $('#yi_text span').each(function () {
+                let $TXTleft =( $(this).position().left / $body_W ) * 100  ;
+                let $TXTtop =(  $(this).position().top / $body_H  ) * 100;
+                var $TXT = $(this).html() ;
+                MT=
+                    {
+                        left : $TXTleft*1+'%' ,
+                        top :  $TXTtop *1 +'%',
+
+                        TXT : $TXT
+                    };
+
+                listTXT.push(MT) ;
+                store.set('jsonTXT',listTXT);
+            }) ;
+            list =[] ;
+            listTXT =[]
+
+        }) ;    /*保存*/
+        $('.revoke').on('click', () =>{
+            $('#yi img').eq(-1).remove()
+        }) ;    /*撤回上一步*/
+        //添加文字
+        $('#confirm').on('click', () => {
+            if(  $('.txt input').val() != false){
+                var TXT = $('.txt input').val() ;
+                var span = `<span>${TXT}</span>` ;
+                $(span).clone().appendTo("#yi_text");
+                $('.txt input').val('') ;
+                $("#yi_text span").draggable();
+            }
+
+        }) ;
+        function toudong() {
+            [...document.querySelectorAll('.drag_leaf')].find(function (value ,index ,all ) {
+
+                var $index = index ;
+                var oDiv = document.getElementsByClassName('drag_leaf')[$index];
+
+                var aSpan = oDiv.getElementsByTagName('span');
+                for (var i = 0; i < aSpan.length; i++) {
+                    dragFn(aSpan[i]);
+
+                }  ;
+                function dragFn(obj) {
+
+                    obj.onmousedown = function (ev) {
+                        var oEv = ev || event;
+                        var oldWidth = oDiv.offsetWidth;
+                        var oldHeight = oDiv.offsetHeight;
+                        var oldX = oEv.clientX;
+                        var oldY = oEv.clientY;
+                        var oldLeft = oDiv.offsetLeft;
+                        var oldTop = oDiv.offsetTop;
+                        document.onmousemove = function (ev) {
+                            var oEv = ev || event;
+                            if (obj.className == 't') {
+                                oDiv.style.height=oldHeight-(oEv.clientY-oldY)+'px';
+                                oDiv.style.top = oldTop + (oEv.clientY - oldY) + 'px';
+                            }
+                            else if (obj.className == 'b') {
+                                oDiv.style.height = oldHeight + (oEv.clientY - oldY)+'px';
+                                oDiv.style.bottom = oldTop - (oEv.clientY + oldY) + 'px';
+                            }
+                            else if (obj.className == 'l') {
+                                oDiv.style.height = oldHeight + 'px';
+                                oDiv.style.width = oldWidth - (oEv.clientX - oldX) + 'px';
+                                oDiv.style.left = oldLeft + (oEv.clientX - oldX) + 'px';
+                            }
+                            else if (obj.className == 'r') {
+                                oDiv.style.height = oldHeight + 'px';
+                                oDiv.style.width = oldWidth + (oEv.clientX - oldX) + 'px';
+                                oDiv.style.right = oldLeft - (oEv.clientX - oldX) + 'px';
+                            }
+                        };
+
+                        document.onmouseup = function () {
+                            document.onmousemove = null;
+                        };
+                        return false;
+                    };
+                }   ;
+
+            })
+        } ;
+        $('.txt input').bind('keyup', function(event) {
+
+            if (event.keyCode == "13") {
+
+                $('#confirm').click() ;
+
+            }
+
+        });
+
+
+
+    });
+</script>
+</body>
+</html>
