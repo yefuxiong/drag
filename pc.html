@@ -165,31 +165,86 @@
         }
 
         .drag_leaf .t {
-            top: 0;
+            top: -5px;
             height: 5px;
+            left: calc( 50% - 5px);
         }
 
         .drag_leaf .b {
-            bottom: 0;
+            bottom: -5px;
             height: 5px;
+            left:  calc( 50% - 5px);
         }
 
         .drag_leaf .l {
-            left: 0;
+            left: -5px;
             height: 100%;
+            top: calc( 50% - 5px);
         }
 
         .drag_leaf .r {
-            right: 0;
+            right: -5px;
             height: 100%;
+            top: calc( 50% - 5px);
         }
 
-        .drag_leaf:hover>span{
+        .border{
             background: #666;
         }
         .drag_leaf:hover{
             cursor: pointer;
         }
+        /*四点*/
+        .drag_leaf .tl,
+        .drag_leaf .bl,
+        .drag_leaf .br,
+        .drag_leaf .tr {
+            width: 10px;
+            height: 10px;
+            position: absolute;
+            border-radius: 50%;
+            z-index: 2;
+            cursor: nwse-resize
+        }
+
+        .drag_leaf .tl,
+        .drag_leaf .bl {
+            left: -5px;
+        }
+
+        .drag_leaf .tr,
+        .drag_leaf .br {
+            right: -5px;
+        }
+
+        .drag_leaf .br,
+        .drag_leaf .bl {
+            bottom: -5px;
+        }
+
+        .drag_leaf .tl,
+        .drag_leaf .tr {
+            top: -5px;
+        }
+
+        .drag_leaf .tr,
+        .drag_leaf .bl {
+            cursor: nesw-resize;
+        }
+        .spot{
+            border:1px dashed #666666;
+        }
+
+        .spot>span:nth-child(4),  .spot>span:nth-child(3), .spot>span:nth-child(2), .spot>span:nth-child(1){
+            height: 10px;
+            width: 10px;
+            background: #eee;
+            border-radius: 50%;
+        }
+        .spot>.tl , .spot>.tr , .spot>.br , .spot>.bl {
+            background:#eee;
+        }
+
 
 
 
@@ -240,9 +295,9 @@
         var $body_H = $('body').height() *1 ;
         var $list_goods = $('.list_goods').width() *1 ;
 
-        $(".Choice img ").draggable();    /* 图片可移动*/
-        $("#yi_text span").draggable();    /* 文字可移动*/
-        /* 拖动物品的滚动条 */
+        $(".Choice img ").draggable();    /* 左边图片列表可移动*/
+        $("#yi_text span").draggable();    /* 添加成之后的文字可移动*/
+
         $(window).mousemove(function (e) {
             if(e.pageX >= $list_goods){
                 $('.Choice').removeClass('Yscroll')
@@ -250,15 +305,15 @@
             else {
                 $('.Choice').addClass('Yscroll')
             }
-        }) ;
+        }) ;     /* 左边的滚动条 */
         $('.Choice img').mouseup(function (e) {
 
-            if(e.pageX >= $list_goods){       /*拖动一定的范围以外*/
+            if(e.pageX >= $list_goods){       /*拖动一定的范围以外 在右边区域添加想对应的DOM*/
                 var $imgUrl = $(this).attr('src');
                 var $left =(  $(this).position().left / $body_W ) *100 ;
                 var $top = ($(this).position().top / $body_H ) *100;
                 var $style = `left:${$left}%;top:${$top}%;width:3rem;height:3rem`;
-                var tag_drag = '<div class="drag_leaf"  style=' + $style + ' ><span class="r"></span><span class="l"></span><span class="t"></span><span class="b"></span><img src=' + $imgUrl + ' ></div>' ;
+                var tag_drag = '<div class="drag_leaf"  style=' + $style + ' ><span class="r"></span><span class="l"></span><span class="t"></span><span class="b"></span><span class="br"></span><span class="bl"></span><span class="tr"></span><span class="tl"></span><img src=' + $imgUrl + ' ></div>' ;
                 $(tag_drag).clone().appendTo('#yi');
             } ;
 
@@ -288,44 +343,7 @@
             tags:  是标签名 ：目前只有img和 span
             Superior ：  是tags的父节点
            */
-        function load_Leaf( data , list ,tags , Superior  ) {
-            try {
-                if( data.length ){
-                    list = data ;
-                    if( list.length > 0 ){
 
-                        list.map(function (indexs) {
-                            var left = ( indexs.left ) ;
-                            var top = ( indexs.top ) ;
-                            var widthDIV =  indexs.width+'px' ;
-                            var height =  indexs.height+'px' ;
-                            var CSS = `left:${left};top:${top};width:${widthDIV};height:${height}` ;
-
-
-                            if(tags == 'img'){
-                                var URL = indexs.imgURL ;
-                                var tag_drag_leaf = '<div class="drag_leaf"  style=' + CSS + '><span class="r"></span><span class="l"></span><span class="t"></span><span class="b"></span><img src=' + URL + ' ></div>' ;
-
-                                $(tag_drag_leaf).clone().appendTo(Superior);
-                            }
-
-
-                            else  if(tags == 'span'){
-                                var txt_VUL = indexs.TXT ;
-                                var span = `<span  style=" ${CSS}" >${txt_VUL}</span>` ;
-                                $(span).clone().appendTo(Superior);
-                            }
-                        })
-                    }
-
-                } ;
-                $(" .drag_leaf ").draggable();    /* 图片可移动*/
-                $("#yi_text span").draggable();
-                toudong()  ;
-
-            }
-            catch(err){}
-        } ;
         $('.saves').on('click',function () {
             store.clear()  ;
 
@@ -368,13 +386,13 @@
             list =[] ;
             listTXT =[]
 
-        }) ;    /*保存*/
+        }) ;    /*点击保存*/
         $('.revoke').on('click', () =>{
             $('#yi img').eq(-1).remove()
         }) ;    /*撤回上一步*/
-        //添加文字
+
         $('#confirm').on('click', () => {
-            if(  $('.txt input').val() != false){
+            if(  $('.txt input').val() != false){      /**/
                 var TXT = $('.txt input').val() ;
                 var span = `<span>${TXT}</span>` ;
                 $(span).clone().appendTo("#yi_text");
@@ -382,7 +400,66 @@
                 $("#yi_text span").draggable();
             }
 
-        }) ;
+        }) ;  /*点击确定添加文字*/
+
+        $('.txt input').bind('keyup', function(event) {
+            if (event.keyCode == "13") {
+                $('#confirm').click() ;
+            }
+        });    /*回车事件添加文字*/
+
+        $('.drag_leaf').on('click',function () {
+            $(this).addClass('spot');
+            $(this).siblings('.drag_leaf').removeClass('spot') ;
+            toudong()  ;
+        });   /*显示八点四边*/
+        //mousemove
+        $('.drag_leaf ').on('mousemove','span',function () {
+            $(this).parents('.drag_leaf').draggable("disable") ;
+
+        });    /*禁用拖动*/
+        $('.drag_leaf ').on('mousemove','img',function () {
+            $('.drag_leaf').draggable('enable') ;
+        })      /*启用拖动*/
+
+        function load_Leaf( data , list ,tags , Superior  ) {
+            try {
+                if( data.length ){
+                    list = data ;
+                    if( list.length > 0 ){
+
+                        list.map(function (indexs) {
+                            var left = ( indexs.left ) ;
+                            var top = ( indexs.top ) ;
+                            var widthDIV =  indexs.width+'px' ;
+                            var height =  indexs.height+'px' ;
+                            var CSS = `left:${left};top:${top};width:${widthDIV};height:${height}` ;
+
+
+                            if(tags == 'img'){
+                                var URL = indexs.imgURL ;
+                                var tag_drag_leaf = '<div class="drag_leaf"  style=' + CSS + '><span class="r"></span><span class="l"></span><span class="t"></span><span class="b"></span><span class="br"></span><span class="bl"></span><span class="tr"></span><span class="tl"></span><img src=' + URL + ' ></div>' ;
+
+                                $(tag_drag_leaf).clone().appendTo(Superior);
+                            }
+
+
+                            else  if(tags == 'span'){
+                                var txt_VUL = indexs.TXT ;
+                                var span = `<span  style=" ${CSS}" >${txt_VUL}</span>` ;
+                                $(span).clone().appendTo(Superior);
+                            }
+                        })
+                    }
+
+                } ;
+                $(" .drag_leaf ").draggable();    /* 图片可移动*/
+                $("#yi_text span").draggable();
+
+
+            }
+            catch(err){}
+        } ;
         function toudong() {
             [...document.querySelectorAll('.drag_leaf')].find(function (value ,index ,all ) {
 
@@ -398,15 +475,41 @@
 
                     obj.onmousedown = function (ev) {
                         var oEv = ev || event;
+                        //
                         var oldWidth = oDiv.offsetWidth;
                         var oldHeight = oDiv.offsetHeight;
                         var oldX = oEv.clientX;
                         var oldY = oEv.clientY;
                         var oldLeft = oDiv.offsetLeft;
                         var oldTop = oDiv.offsetTop;
+                        //$.alert(oldWidth)
                         document.onmousemove = function (ev) {
                             var oEv = ev || event;
-                            if (obj.className == 't') {
+                            if (obj.className == 'tl') {
+                                oDiv.style.width = oldWidth - (oEv.clientX - oldX) + 'px';
+                                oDiv.style.height=oldHeight-(oEv.clientY-oldY)+'px';
+                                oDiv.style.left = oldLeft + (oEv.clientX - oldX) + 'px';
+                                oDiv.style.top = oldTop + (oEv.clientY - oldY) + 'px';
+                            }
+                            else if (obj.className == 'bl') {
+                                oDiv.style.width = oldWidth - (oEv.clientX - oldX) + 'px';
+                                oDiv.style.height=oldHeight+(oEv.clientY-oldY)+'px';
+                                oDiv.style.left = oldLeft + (oEv.clientX - oldX) + 'px';
+                                oDiv.style.bottom = oldTop + (oEv.clientY + oldY) + 'px';
+                            }
+                            else if (obj.className == 'tr') {
+                                oDiv.style.width = oldWidth + (oEv.clientX - oldX) + 'px';
+                                oDiv.style.height = oldHeight - (oEv.clientY - oldY)+'px';
+                                oDiv.style.right = oldLeft - (oEv.clientX - oldX) + 'px';
+                                oDiv.style.top = oldTop + (oEv.clientY - oldY) + 'px';
+                            }
+                            else if (obj.className == 'br') {
+                                oDiv.style.width = oldWidth + (oEv.clientX - oldX) + 'px';
+                                oDiv.style.height = oldHeight + (oEv.clientY - oldY)+'px';
+                                oDiv.style.right = oldLeft - (oEv.clientX - oldX) + 'px';
+                                oDiv.style.bottom = oldTop + (oEv.clientY + oldY) + 'px';
+                            }
+                            else if (obj.className == 't') {
                                 oDiv.style.height=oldHeight-(oEv.clientY-oldY)+'px';
                                 oDiv.style.top = oldTop + (oEv.clientY - oldY) + 'px';
                             }
@@ -431,22 +534,11 @@
                         };
                         return false;
                     };
+
                 }   ;
 
             })
         } ;
-        $('.txt input').bind('keyup', function(event) {
-
-            if (event.keyCode == "13") {
-
-                $('#confirm').click() ;
-
-            }
-
-        });
-
-
-
     });
 </script>
 </body>
